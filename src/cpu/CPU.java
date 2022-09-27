@@ -18,7 +18,7 @@ public class CPU {
             entry(0x04,"SATM"),
             entry(0x05,"SATI"),
             entry(0x06,"LDAR"),
-            entry(0x07,"LDAD"),
+            entry(0x07,"LDAM"),
             entry(0x08,"LDAI"),
             entry(0x09,"XCH"),
             entry(0x0A,"ADDR"),
@@ -109,7 +109,7 @@ public class CPU {
             case "SATI": SATI(adr); break;
 
             case "LDAR": LDAR(adr); break;
-            case "LDAD": LDAD(adr); break;
+            case "LDAM": LDAM(adr); break;
             case "LDAI": LDAI(adr); break;
             case "XCH": XCH(); break;
 
@@ -176,8 +176,8 @@ public class CPU {
         AReg.set(dataMemory.get(reg));
     }
 
-    private void LDAD(int adr){
-        decodedCommandReg.setValue("LDAD "+String.format("%0" + 2 + "X", adr)+"H");
+    private void LDAM(int adr){
+        decodedCommandReg.setValue("LDAM "+String.format("%0" + 2 + "X", adr)+"H");
         AReg.set(dataMemory.get(adr));
     }
 

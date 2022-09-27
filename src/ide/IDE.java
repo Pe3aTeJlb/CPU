@@ -29,7 +29,7 @@ public class IDE {
             entry("SATM", 0x04),
             entry("SATI", 0x05),
             entry("LDAR", 0x06),
-            entry("LDAD", 0x07),
+            entry("LDAM", 0x07),
             entry("LDAI", 0x08),
             entry("XCH", 0x09),
             entry("ADDR", 0x0A),
