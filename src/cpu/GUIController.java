@@ -41,6 +41,9 @@ public class GUIController {
     @FXML
     private RadioButton carryFlagRdBtn;
 
+    @FXML
+    private RadioButton zeroFlagRdBtn;
+
 
 
     //Memory
@@ -194,6 +197,7 @@ public class GUIController {
         commandDecodTxtFld.textProperty().bindBidirectional(cpu.getDecodedCommandReg());
 
         carryFlagRdBtn.selectedProperty().bind(cpu.getCarryFlagReg());
+        zeroFlagRdBtn.selectedProperty().bind(cpu.getZeroFlagReg());
 
     }
 
@@ -303,12 +307,12 @@ public class GUIController {
                 "\tADDI @R0 - сложение аккумулятора с косвенно адресуемым байтом\n" +
                 "\tADDC R0 - сложение аккумулятора с регистром и переносом\n" +
                 "\tINC R0 - инкремент регистра\n" +
-                "\tINC R0 - инкремент регистра\n" +
+                "\tDEC R0 - декремент регистра\n" +
                 "\tMUL AB - умножить AB - результат (B)(A) <= (A)*(B)\n" +
                 "\n" +
                 "Операции условного перехода:\n" +
                 "\n" +
-                "\tJNZ R0, loop - дек регистра и переход если не 0");
+                "\tJNZ loop - переход по метке если не 0");
 
         root.getChildren().add(textArea);
 

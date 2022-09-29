@@ -55,7 +55,7 @@ public class CPU {
 
         emptyReached = false;
 
-        commandMemory = new Memory(64, 1, commandLen+addrLen, 2);
+        commandMemory = new Memory(128, 1, commandLen+addrLen, 2);
         dataMemory = new Memory(256, 8, 16, 16);
 
     }
@@ -78,6 +78,7 @@ public class CPU {
 
     public void executeInstruction(){
 
+        System.out.println("Counter  " + commandCounterReg.get());
         rawCommandReg.setValue(commandMemory.get(commandCounterReg.get()));
 
         decodeCommand();
@@ -139,20 +140,6 @@ public class CPU {
 
     }
 
-
-
-    private void IREG(int reg, int literal){
-        decodedCommandReg.setValue("IREG R"+reg+", #"+String.format("%0" + 2 + "X", literal)+"H");
-        dataMemory.set(reg, literal);
-    }
-
-    private void IMEM(int adr, int literal){
-        decodedCommandReg.setValue("IMEM "+String.format("%0" + 2 + "X", adr)+"H, #"+String.format("%0" + 2 + "X", literal)+"H");
-        dataMemory.set(adr, literal);
-    }
-
-
-
     private void SATR(int reg){
         decodedCommandReg.setValue("SATR R"+reg);
         dataMemory.set(reg, AReg.get());
@@ -181,7 +168,7 @@ public class CPU {
     }
 
     private void LDAD(int literal){
-        decodedCommandReg.setValue("LDAI #"+literal+"h");
+        decodedCommandReg.setValue("LDAD #"+literal+"h");
         AReg.set(literal);
     }
 

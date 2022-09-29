@@ -65,7 +65,7 @@ public class IDE {
         programText = ideTxtArea.getText();
 
         if (lexer.readProgram(programText)){
-            //lexer.print();
+            lexer.print();
             cpu.loadCommandMemory(toBinaryCommands());
             compiled.set(true);
         }
