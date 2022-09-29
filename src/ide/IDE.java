@@ -23,21 +23,21 @@ public class IDE {
     private CPU cpu;
     private Map<String, Integer> commandsMap = Map.ofEntries(
             entry("EMPTY", 0x00),
-            entry("IREG", 0x01),
-            entry("IMEM", 0x02),
-            entry("SATR", 0x03),
-            entry("SATM", 0x04),
-            entry("SATI", 0x05),
-            entry("LDAR", 0x06),
-            entry("LDAM", 0x07),
-            entry("LDAI", 0x08),
-            entry("XCH", 0x09),
-            entry("ADDR", 0x0A),
-            entry("ADDI", 0x0B),
-            entry("ADDC", 0x0C),
-            entry("INC", 0x0D),
+            entry("SATR", 0x01),
+            entry("SATM", 0x02),
+            entry("SATI", 0x03),
+            entry("LDAR", 0x04),
+            entry("LDAM", 0x05),
+            entry("LDAD", 0x06),
+            entry("LDAI", 0x07),
+            entry("XCH", 0x08),
+            entry("ADDR", 0x09),
+            entry("ADDI", 0x0A),
+            entry("ADDC", 0x0B),
+            entry("INC", 0x0C),
+            entry("DEC", 0x0D),
             entry("MUL", 0x0E),
-            entry("DJNZ", 0x0F)
+            entry("JNZ", 0x0F)
     );
 
     public IDE(TextArea ideTxtArea, Button compileBtn, Button runBtn, Button stepBtn, CPU cpu) {
@@ -77,38 +77,37 @@ public class IDE {
         ArrayList<Integer> commands = new ArrayList<>();
         Map<String, Integer> marksMap = new HashMap<>();
 
-        String command, literal, address, commandWord;
+        String command, address, commandWord;
         for(Lexeme lexeme: lexer.getLexemes()){
 
             if(lexeme.getTerminal().getName().equals("MARK")) {
-                literal = lexeme.getValue().replace(':', ' ').trim();
-                marksMap.put(literal, commands.size());
+                address = lexeme.getValue().replace(':', ' ').trim();
+                marksMap.put(address, commands.size());
             } else {
 
-                String[] lit = lexeme.getValue().split(",");
-                String[] op = lit[0].split("(\\s)+");
-                command = String.format("%" + cpu.getCommandLen() + "s", Integer.toBinaryString(commandsMap.get(op[0]))).replace(' ', '0');
-                address = String.format("%" + cpu.getAddrLen() + "s",
-                        Integer.toBinaryString(Integer.parseInt(op[1].replaceAll("(?i)(@?R{1}|H{1})", ""), 16))
-                ).replace(' ', '0');
+                if(!lexeme.getTerminal().getName().equals("JNZ")){
 
+                    String[] op = lexeme.getValue().split("(\\s)+");
+                    command = String.format("%" + cpu.getCommandLen() + "s", Integer.toBinaryString(commandsMap.get(op[0]))).replace(' ', '0');
+                    address = String.format("%" + cpu.getAddrLen() + "s",
+                            Integer.toBinaryString(Integer.parseInt(op[1].replaceAll("(?i)(@?R{1}|H{1})", "").replaceAll("#",""), 16))
+                    ).replace(' ', '0');
 
-                if (lit.length > 1) {
-
-                    if(lexeme.getTerminal().getName().equals("DJNZ")){
-                        literal =  String.format("%" + cpu.getLiteralLen() + "s",
-                                Integer.toBinaryString(marksMap.get(lit[1].trim()))
-                        ).replace(' ', '0');
-                    } else {
-                        literal = String.format("%" + cpu.getLiteralLen() + "s",
-                                Integer.toBinaryString(Integer.parseInt(lit[1].trim().replace('#', ' ').replace('H', ' ').trim(), 16))
-                        ).replace(' ', '0');
-                    }
                 } else {
-                    literal = String.format("%" + cpu.getLiteralLen() + "s", "").replace(' ', '0');
+
+                    String[] op = lexeme.getValue().split("(\\s)+");
+                    command = String.format("%" + cpu.getCommandLen() + "s", Integer.toBinaryString(commandsMap.get(op[0]))).replace(' ', '0');
+                    address =  String.format("%" + cpu.getAddrLen() + "s",
+                            Integer.toBinaryString(marksMap.get(op[1].trim()))
+                    ).replace(' ', '0');
+
                 }
 
-                commandWord = command + literal + address;
+
+
+
+
+                commandWord = command + address;
                 //System.out.println(lexeme.getValue() + " " + commandWord);
                 commands.add(Integer.parseInt(commandWord, 2));
 

@@ -10,11 +10,9 @@ public class Lexer {
 
     private  List<Terminal> TERMINALS = List.of(
 
-			new Terminal("IREG", "(?i)^(\\s)*(ireg){1}(\\s)+r[0-7]+,(\\s)*(#+[0-9a-f]{2}+h)"),
-			new Terminal("IMEM", "(?i)^(\\s)*(imem){1}(\\s)+[0-9a-f]{2}+h+,(\\s)*(#+[0-9a-f]{2}+h)"),
-
 			new Terminal("ACCUM", "(?i)^(\\s)*(satr|ldar){1}(\\s)+(r[0-7]{1})(\\s)*"),
             new Terminal("ACCUM", "(?i)^(\\s)*(satm|ldam){1}(\\s)+([0-9a-f]{2}+h)(\\s)*"),
+            new Terminal("ACCUM", "(?i)^(\\s)*(ldad){1}(\\s)+(#+[0-9a-f]{2}+h)(\\s)*"),
             new Terminal("ACCUM", "(?i)^(\\s)*(sati|ldai){1}(\\s)+(@r[0-7]{1})(\\s)*"),
             new Terminal("ACCUM", "(?i)^(\\s)*(xch){1}(\\s)+(ab)(\\s)*"),
 
@@ -22,8 +20,9 @@ public class Lexer {
             new Terminal("ADD", "(?i)^(\\s)*(addi){1}(\\s)+(@r[0-7]{1})(\\s)*"),
 			
 			new Terminal("INC", "(?i)^(\\s)*(inc){1}(\\s)+(r[0-7]{1})(\\s)*"),
-			new Terminal("MUL", "(?i)^(\\s)*(mul){1}(\\s)+(ab)(\\s)*"),
-			new Terminal("DJNZ", "(?i)^(\\s)*(djnz){1}(\\s)+(r[0-7]{1}|)+,(\\s)*+([A-Za-z])+$"),
+            new Terminal("DEC", "(?i)^(\\s)*(dec){1}(\\s)+(r[0-7]{1})(\\s)*"),
+            new Terminal("MUL", "(?i)^(\\s)*(mul){1}(\\s)+(ab)(\\s)*"),
+			new Terminal("JNZ", "(?i)^(\\s)*(jnz){1}(\\s)*+([A-Za-z])+$"),
 
             new Terminal("EMPTY", "(?i)^(\\s)*empty(\\s)*$"),
 

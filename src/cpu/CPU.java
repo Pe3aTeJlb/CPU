@@ -12,21 +12,21 @@ public class CPU {
 
     private Map<Integer, String> commandsMap = Map.ofEntries(
             entry(0x00, "EMPTY"),
-            entry(0x01, "IREG"),
-            entry(0x02,"IMEM"),
-            entry(0x03,"SATR"),
-            entry(0x04,"SATM"),
-            entry(0x05,"SATI"),
-            entry(0x06,"LDAR"),
-            entry(0x07,"LDAM"),
-            entry(0x08,"LDAI"),
-            entry(0x09,"XCH"),
-            entry(0x0A,"ADDR"),
-            entry(0x0B,"ADDI"),
-            entry(0x0C,"ADDC"),
-            entry(0x0D,"INC"),
+            entry(0x01,"SATR"),
+            entry(0x02,"SATM"),
+            entry(0x03,"SATI"),
+            entry(0x04,"LDAR"),
+            entry(0x05,"LDAM"),
+            entry(0x06,"LDAD"),
+            entry(0x07,"LDAI"),
+            entry(0x08,"XCH"),
+            entry(0x09,"ADDR"),
+            entry(0x0A,"ADDI"),
+            entry(0x0B,"ADDC"),
+            entry(0x0C,"INC"),
+            entry(0x0D,"DEC"),
             entry(0x0E,"MUL"),
-            entry(0x0F,"DJNZ")
+            entry(0x0F,"JNZ")
     );
 
     private IntegerProperty commandCounterReg;
@@ -34,11 +34,11 @@ public class CPU {
     private StringProperty decodedCommandReg;
     private IntegerProperty AReg, BReg;
     private BooleanProperty carryFlagReg;
+    private BooleanProperty zeroFlagReg;
 
     private Memory commandMemory, dataMemory;
 
-    int commandLen = 4;
-    int literalLen = 8;
+    int commandLen = 8;
     int addrLen = 8;
 
     private boolean emptyReached;
@@ -51,10 +51,11 @@ public class CPU {
         rawCommandReg = new SimpleIntegerProperty(0);
         decodedCommandReg = new SimpleStringProperty("");
         carryFlagReg = new SimpleBooleanProperty(false);
+        zeroFlagReg = new SimpleBooleanProperty(false);
 
         emptyReached = false;
 
-        commandMemory = new Memory(64, 1, commandLen+literalLen+addrLen, 2);
+        commandMemory = new Memory(64, 1, commandLen+addrLen, 2);
         dataMemory = new Memory(256, 8, 16, 16);
 
     }
@@ -64,7 +65,7 @@ public class CPU {
     }
 
 
-    int command, literal, adr;
+    int command, adr;
     boolean jmp = false;
 
     public void executeProgram(){
@@ -93,16 +94,12 @@ public class CPU {
         System.out.println(rawCommand);
 
         command = Integer.parseInt(rawCommand.substring(0, commandLen),2);
-        literal = Integer.parseInt(rawCommand.substring(commandLen, commandLen+literalLen),2);
-        adr = Integer.parseInt(rawCommand.substring(commandLen+literalLen, commandLen+literalLen+addrLen),2);
+        adr = Integer.parseInt(rawCommand.substring(commandLen, commandLen+addrLen),2);
 
-        System.out.println(rawCommand.substring(0, commandLen) + " " + rawCommand.substring(commandLen, commandLen+literalLen) + " " + rawCommand.substring(commandLen+literalLen, commandLen+literalLen+addrLen));
-        System.out.println(command+" " + literal + " " + adr + " " + commandsMap.get(command));
+        System.out.println(rawCommand.substring(0, commandLen) + " " + rawCommand.substring(commandLen, commandLen+addrLen));
+        System.out.println(command+ " " + adr + " " + commandsMap.get(command));
 
         switch (commandsMap.get(command)){
-
-            case "IREG": IREG(adr, literal); break;
-            case "IMEM": IMEM(adr, literal); break;
 
             case "SATR": SATR(adr); break;
             case "SATM": SATM(adr); break;
@@ -110,6 +107,7 @@ public class CPU {
 
             case "LDAR": LDAR(adr); break;
             case "LDAM": LDAM(adr); break;
+            case "LDAD": LDAD(adr); break;
             case "LDAI": LDAI(adr); break;
             case "XCH": XCH(); break;
 
@@ -117,9 +115,10 @@ public class CPU {
             case "ADDI": ADDI(adr); break;
             case "ADDC": ADDC(adr); break;
             case "INC": INC(adr); break;
+            case "DEC": DEC(adr); break;
             case "MUL": MUL(); break;
 
-            case "DJNZ": DJNZ(adr, literal); break;
+            case "JNZ": JNZ(adr); break;
 
             default: EMPTY(); break;
 
@@ -179,6 +178,11 @@ public class CPU {
     private void LDAM(int adr){
         decodedCommandReg.setValue("LDAM "+String.format("%0" + 2 + "X", adr)+"H");
         AReg.set(dataMemory.get(adr));
+    }
+
+    private void LDAD(int literal){
+        decodedCommandReg.setValue("LDAI #"+literal+"h");
+        AReg.set(literal);
     }
 
     private void LDAI(int reg){
@@ -249,6 +253,13 @@ public class CPU {
         dataMemory.set(reg, dataMemory.get(reg)+1);
     }
 
+    private void DEC(int reg){
+        decodedCommandReg.setValue("DEC R"+reg);
+        int buff = dataMemory.get(reg) - 1;
+        if(buff == 0) zeroFlagReg.set(true);
+        dataMemory.set(reg, buff);
+    }
+
     private void MUL(){
 
         decodedCommandReg.setValue("MUL AB");
@@ -265,12 +276,11 @@ public class CPU {
 
 
 
-    private void DJNZ(int reg, int literal){
+    private void JNZ(int literal){
 
-        decodedCommandReg.setValue("DJNZ R"+reg+", "+ String.format("%0" + 2 + "X", literal)+"H");
+        decodedCommandReg.setValue("JNZ "+ String.format("%0" + 2 + "X", literal)+"H");
 
-        dataMemory.set(reg, dataMemory.get(reg)-1);
-        if(dataMemory.get(reg) != 0){
+        if(zeroFlagReg.get() == false){
             commandCounterReg.set(literal);
             jmp = true;
         }
@@ -290,6 +300,7 @@ public class CPU {
         rawCommandReg.set(0);
         decodedCommandReg.set("");
         carryFlagReg.set(false);
+        zeroFlagReg.set(false);
 
         emptyReached = false;
 
@@ -300,16 +311,13 @@ public class CPU {
         return commandLen;
     }
 
-    public int getLiteralLen() {
-        return literalLen;
-    }
 
     public int getAddrLen() {
         return addrLen;
     }
 
     public int getWordLen(){
-        return commandLen+literalLen+addrLen;
+        return commandLen+addrLen;
     }
 
     public Memory getCommandMemory(){
@@ -344,6 +352,10 @@ public class CPU {
 
     public BooleanProperty getCarryFlagReg(){
         return carryFlagReg;
+    }
+
+    public BooleanProperty getZeroFlagReg(){
+        return zeroFlagReg;
     }
 
 }

@@ -1,14 +1,31 @@
-IMEM 08h, #06h
-IMEM 09h, #01h
-IMEM 0Ah, #01h
-IMEM 0Bh, #01h
-IMEM 0Ch, #01h
-IMEM 0Dh, #01h
-IMEM 0Eh, #FFh
+LDAD #06h
+SATM 08h
+
+LDAD #01h
+SATM 09h
+
+LDAD #01h
+SATM 0Ah
+
+LDAD #01h
+SATM 0Bh
+
+LDAD #01h
+SATM 0Bh
+
+LDAD #01h
+SATM 0Ch
+
+LDAD #01h
+SATM 0Dh
+
+LDAD #FFh
+SATM 0Eh
 
 //Initializing base address location where array is stored
-	IREG R0, #08h
-	LDAD 08h
+    LDAD #08h
+    SATR R0
+	LDAM 08h
 	SATR R1
 //Initializing data adress location
 	INC R0
@@ -20,40 +37,88 @@ loop:
 	INC R0
 
 	SATR R2
-	DJNZ R1, loop
+	DEC R1
+	JNZ loop
 
 ///////////////////////////////////////////
 
 
-IMEM 08h, #0Ah
+LDAD #0Ah
+SATM 08h
 
-IMEM 09h, #01h
-IMEM 0Ah, #02h
-IMEM 0Bh, #03h
-IMEM 0Ch, #04h
-IMEM 0Dh, #05h
-IMEM 0Eh, #06h
-IMEM 0Fh, #07h
-IMEM 10h, #08h
-IMEM 11h, #09h
-IMEM 12h, #0Ah
+LDAD #01h
+SATM 09h
 
-IMEM 18h, #0Ah
+LDAD #02h
+SATM 0Ah
 
-IMEM 19h, #01h
-IMEM 1Ah, #02h
-IMEM 1Bh, #03h
-IMEM 1Ch, #04h
-IMEM 1Eh, #05h
-IMEM 1Fh, #06h
-IMEM 20h, #07h
-IMEM 21h, #08h
-IMEM 22h, #09h
-IMEM 23h, #0Ah
+LDAD #03h
+SATM 0Bh
+
+LDAD #04h
+SATM 0Ch
+
+LDAD #05h
+SATM 0Dh
+
+LDAD #06h
+SATM 0Eh
+
+LDAD #07h
+SATM 0Fh
+
+LDAD #08h
+SATM 10h
+
+LDAD #09h
+SATM 11h
+
+LDAD #0Ah
+SATM 12h
 
 
-	IREG R0, #08h
-	IREG R1, #10h
+
+
+LDAD #0Ah
+SATM 18h
+
+LDAD #01h
+SATM 19h
+
+LDAD #02h
+SATM 1Ah
+
+LDAD #03h
+SATM 1Bh
+
+LDAD #04h
+SATM 1Ch
+
+LDAD #05h
+SATM 1Dh
+
+LDAD #06h
+SATM 1Eh
+
+LDAD #07h
+SATM 1Fh
+
+LDAD #08h
+SATM 20h
+
+LDAD #09h
+SATM 21h
+
+LDAD #0Ah
+SATM 22h
+
+
+    LDAD #08h
+    SATR R0
+
+	LDAD #10h
+    SATR R1
+
 	LDAM 08h
 	SATR R2
 
@@ -78,4 +143,5 @@ loop:
 	INC R0
 	INC R1
 
-	DJNZ R2, loop
+    DEC R2
+	JNZ loop
